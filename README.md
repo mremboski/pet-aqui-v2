@@ -1,5 +1,5 @@
 
-# Pet Aqui — v2 (conceito A)
+# Pet Aqui  - O Mundo de Ajuda PET
 
 Frontend **React + TypeScript + Tailwind** com **login simulado**, **upload de imagem Base64**, **interações (interesse e avaliações)** e **persistência real** via **json-server**.
 
