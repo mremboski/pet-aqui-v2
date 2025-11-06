@@ -1,0 +1,126 @@
+{
+  "usuarios": [
+    {
+      "id": "1",
+      "nome": "Michel"
+    }
+  ],
+  "pets": [
+    {
+      "id": "pet-001",
+      "nome": "Spike",
+      "tipo": "Cachorro",
+      "raca": "Vira-lata",
+      "idade": 2,
+      "porte": "Médio",
+      "cor": "Caramelo",
+      "descricao": "Brincalhão e cheio de energia. Adora correr no parque e buscar bolinha.",
+      "cidade": "Porto Alegre",
+      "estado": "RS",
+      "fotoUrl": "https://via.placeholder.com/400x300/5BCEBF/2E97B7?text=Spike",
+      "interesses": [
+        "Michel"
+      ],
+      "avaliacoes": [
+        {
+          "usuario": "Michel",
+          "nota": 5,
+          "comentario": "Muito dócil!"
+        },
+        {
+          "usuario": "Carolina",
+          "nota": 4,
+          "comentario": "Um amor de pet."
+        }
+      ]
+    },
+    {
+      "id": "pet-002",
+      "nome": "Mel",
+      "tipo": "Gato",
+      "raca": "Persa",
+      "idade": 6,
+      "porte": "Pequeno",
+      "cor": "Tricolor",
+      "descricao": "Gata calma e independente, perfeita para apartamento.",
+      "cidade": "Canoas",
+      "estado": "RS",
+      "fotoUrl": "https://via.placeholder.com/400x300/32B9BE/2E97B7?text=Mel",
+      "interesses": [
+        "Michel"
+      ],
+      "avaliacoes": [
+        {
+          "usuario": "Michel",
+          "nota": 5,
+          "comentario": " lindissima"
+        }
+      ]
+    },
+    {
+      "id": "pet-1762310167978",
+      "nome": "Ambrosio",
+      "idade": 2,
+      "cor": "Caramelo",
+      "raca": "SRD",
+      "tipo": "Cachorro",
+      "porte": "Médio",
+      "descricao": "Brincalhão e cheio de energia. Adora correr no parque e buscar bolinha.",
+      "cidade": "Osório",
+      "estado": "RS",
+      "saude": "Castrado, vacinas em dia",
+      "temperamento": "Ótimo com crianças e outros animais",
+      "fotoUrl": "https://jpimg.com.br/uploads/2024/11/8-racas-de-cachorros-mais-carinhosas-do-mundo.jpg",
+      "interesses": [
+        "Michel"
+      ],
+      "avaliacoes": [
+        {
+          "usuario": "Michel",
+          "nota": 5,
+          "comentario": "Lindoo"
+        },
+        {
+          "usuario": "Michel",
+          "nota": 3,
+          "comentario": "penetrante"
+        }
+      ]
+    }
+  ],
+  "lares": [
+    {
+      "id": "1",
+      "nome": "Lar da Maria",
+      "cidade": "Porto Alegre",
+      "estado": "RS",
+      "capacidade": 2
+    },
+    {
+      "id": "2",
+      "nome": "Abrigo Patas Amigas",
+      "cidade": "Canoas",
+      "estado": "RS",
+      "capacidade": 15
+    },
+    {
+      "id": "3",
+      "nome": "Associação de Resgate Animal",
+      "cidade": "Pelotas",
+      "estado": "RS",
+      "capacidade": 20
+    }
+  ],
+  "eventos": [
+    {
+      "id": 1,
+      "nome": "Feira de Adoção da Capital",
+      "tipo": "Feira de Adoção",
+      "dataISO": "2025-12-20",
+      "horario": "10:00 - 16:00",
+      "local": "Parque da Redenção, Porto Alegre - RS",
+      "descricao": "Evento com mais de 50 cães e gatos disponíveis.",
+      "bannerUrl": "https://exemplo.com/banner.jpg"
+    }
+  ]
+}
