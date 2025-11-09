@@ -6,7 +6,10 @@ import {
   MegaphoneIcon,
   ArrowRightIcon,
 } from "@heroicons/react/24/outline";
-import { getHomeStats } from "../services/petServices";
+import { listarEventos } from "../context/eventServices";
+import { listarDoacoes } from "../services/doacoesServices";
+import { listarLares } from "../services/laresServices";
+import { listarPets } from "../services/petServices";
 import type { Pet } from "../types/pet_type";
 
 function StatCard({
@@ -32,7 +35,7 @@ function StatCard({
   );
 }
 
-function PetDestaqueCard({ pet }: { pet: Pet }) {
+function CardPet({ pet }: { pet: Pet }) {
   return (
     <Link
       to={`/adote/${pet.id}`}
@@ -53,43 +56,39 @@ function PetDestaqueCard({ pet }: { pet: Pet }) {
 
 export default function HomePage() {
   const [loading, setLoading] = useState(true);
-  const [totalPets, setTotalPets] = useState(0);
-  const [totalLares, setTotalLares] = useState(0);
-  const [totalEventos, setTotalEventos] = useState(0);
-  const [totalInteressados, setTotalInteressados] = useState(0);
-  const [destaques, setDestaques] = useState<Pet[]>([]);
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [lares, setLares] = useState<any[]>([]);
+  const [doacoes, setDoacoes] = useState<any[]>([]);
+  const [eventos, setEventos] = useState<any[]>([]);
 
   useEffect(() => {
-    let ativo = true;
-
-    async function carregarStats() {
+    async function carregarTudo() {
+      setLoading(true);
       try {
-        setLoading(true);
-        const s = await getHomeStats();
-        if (!ativo) return;
-        setTotalPets(s.totalPets);
-        setTotalLares(s.totalLares);
-        setTotalEventos(s.totalEventosProximos);
-        setTotalInteressados(s.totalInteressados);
-        setDestaques(s.destaquePets);
+
+        const [p, l, d, e] = await Promise.all([
+          listarPets(),
+          listarLares(),
+          listarDoacoes(),
+          listarEventos(),
+        ]);
+        setPets(p.slice(0, 4) as Pet[]);
+        setLares(l.slice(0, 4));
+        setDoacoes(d.slice(0, 4));
+        setEventos(e.slice(0, 4));
+      } catch (err) {
+        console.error("Erro ao carregar dados da home:", err);
       } finally {
         setLoading(false);
       }
     }
-
-    carregarStats();
-    const interval = setInterval(carregarStats, 10000);
-    return () => {
-      ativo = false;
-      clearInterval(interval);
-    };
+    carregarTudo();
   }, []);
 
   return (
     <div className="p-6 md:p-10">
       <header className="relative text-center mb-16 py-20 rounded-3xl overflow-hidden border border-purple-900/40 shadow-[0_0_40px_rgba(139,92,246,0.25)] bg-gradient-to-br from-[#10001f] via-[#0a0010] to-[#000814]">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-700/20 via-indigo-600/10 to-blue-600/20 blur-3xl animate-pulse"></div>
-
         <div className="relative z-10">
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
             Bem-vindo(a) ao{" "}
@@ -114,79 +113,119 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <StatCard
             icon={HeartIcon}
-            label="Pets disponíveis para Adoção"
-            value={loading ? "..." : totalPets}
+            label="Pets disponíveis"
+            value={loading ? "..." : pets.length}
             route="/adote"
           />
           <StatCard
             icon={HomeModernIcon}
-            label="Lares Temporários Cadastrados"
-            value={loading ? "..." : totalLares}
-            route="/lar-temporario"
+            label="Lares temporários"
+            value={loading ? "..." : lares.length}
+            route="/lares"
           />
           <StatCard
             icon={MegaphoneIcon}
-            label="Eventos de Adoção Próximos"
-            value={loading ? "..." : totalEventos}
+            label="Eventos"
+            value={loading ? "..." : eventos.length}
             route="/eventos"
           />
           <StatCard
             icon={HeartIcon}
-            label="Pessoas Interessadas em Pets"
-            value={loading ? "..." : totalInteressados}
-            route="/adote"
+            label="Doações disponíveis"
+            value={loading ? "..." : doacoes.length}
+            route="/doacoes"
           />
         </div>
       </section>
 
       <section className="mb-16">
         <h2 className="text-3xl font-bold text-white mb-6 border-b border-purple-800/40 pb-2">
-          Destaques da Semana
+          🐶 Pets em Destaque
         </h2>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          <div className="lg:col-span-2">
-            <h3 className="text-2xl font-semibold text-gray-100 mb-4">
-              Pets em Maior Urgência
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {loading
-                ? [...Array(4)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-40 bg-white/5 rounded-xl border border-gray-700 animate-pulse"
-                  />
-                ))
-                : destaques.map((p) => (
-                  <PetDestaqueCard key={p.id} pet={p} />
-                ))}
-            </div>
-            <Link
-              to="/adote"
-              className="mt-6 inline-flex items-center text-purple-400 font-semibold hover:text-indigo-400 transition"
-            >
-              Ver todos os pets <ArrowRightIcon className="h-5 w-5 ml-2" />
-            </Link>
+        {loading ? (
+          <p className="text-gray-400">Carregando pets...</p>
+        ) : pets.length === 0 ? (
+          <p className="text-gray-400">Nenhum pet cadastrado ainda.</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {pets.map((p) => (
+              <CardPet key={p.id} pet={p} />
+            ))}
           </div>
+        )}
+      </section>
 
-          <div className="bg-[#111] border border-gray-800 p-6 rounded-xl shadow-[0_0_25px_rgba(139,92,246,0.15)]">
-            <h3 className="text-2xl font-semibold text-gray-100 mb-4 border-b border-gray-700 pb-2">
-              Próximas Feiras e Notícias
-            </h3>
-            <div className="space-y-3 text-gray-300">
-              <p>
-                Veja a agenda completa em{" "}
-                <Link
-                  to="/eventos"
-                  className="text-purple-400 hover:text-indigo-400 underline"
-                >
-                  Eventos
-                </Link>
-                .
-              </p>
-            </div>
+      <section className="mb-16">
+        <h2 className="text-3xl font-bold text-white mb-6 border-b border-purple-800/40 pb-2">
+          🎪 Próximos Eventos
+        </h2>
+        {eventos.length === 0 ? (
+          <p className="text-gray-400">Nenhum evento disponível.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {eventos.map((e) => (
+              <div
+                key={e.id}
+                className="bg-[#111] border border-gray-800 p-5 rounded-xl text-gray-300"
+              >
+                <h3 className="text-xl text-white font-semibold mb-2">{e.nome}</h3>
+                <p>{e.descricao}</p>
+                <p className="text-sm mt-2 text-gray-400">
+                  📅 {e.data} • 📍 {e.local}
+                </p>
+              </div>
+            ))}
           </div>
-        </div>
+        )}
+      </section>
+
+      <section className="mb-16">
+        <h2 className="text-3xl font-bold text-white mb-6 border-b border-purple-800/40 pb-2">
+          🏡 Lares Temporários Recentes
+        </h2>
+        {lares.length === 0 ? (
+          <p className="text-gray-400">Nenhum lar cadastrado ainda.</p>
+        ) : (
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {lares.map((l) => (
+              <li
+                key={l.id}
+                className="bg-[#111] border border-gray-800 rounded-xl p-5"
+              >
+                <p className="text-white font-bold">{l.nomeVoluntario}</p>
+                <p className="text-gray-400 text-sm">{l.localidade}</p>
+                <p className="text-gray-400 text-sm">
+                  Aceita: {l.aceita} • Capacidade: {l.capacidade}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section>
+        <h2 className="text-3xl font-bold text-white mb-6 border-b border-purple-800/40 pb-2">
+          🧺 Últimas Doações
+        </h2>
+        {doacoes.length === 0 ? (
+          <p className="text-gray-400">Nenhuma doação cadastrada.</p>
+        ) : (
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {doacoes.map((d) => (
+              <li
+                key={d.id}
+                className="bg-[#111] border border-gray-800 rounded-xl p-5"
+              >
+                <p className="text-white font-bold">{d.tipo}</p>
+                <p className="text-gray-400 text-sm">{d.descricao}</p>
+                <p className="text-gray-500 text-xs mt-2">
+                  {d.localidade} • {d.doador}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );

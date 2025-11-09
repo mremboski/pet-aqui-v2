@@ -1,192 +1,160 @@
 import React, { useState } from "react";
+import { cadastrarEvento } from "../context/eventServices";
+import { useAuth } from "../context/AuthContext";
 
-const CadastroEventoPage: React.FC = () => {
-    const [formData, setFormData] = useState({
-        nomeEvento: "",
+export default function CadastroEventoPage() {
+    const { usuario } = useAuth();
+    const [form, setForm] = useState({
+        nome: "",
         data: "",
         horario: "",
         local: "",
         descricao: "",
-        fotoLink: "",
-        fotoArquivo: null as File | null,
+        imagemUrl: "",
     });
 
-    const [fotoPreview, setFotoPreview] = useState<string | null>(null);
+    function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    }
 
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
-    };
-
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setFormData((prev) => ({ ...prev, fotoArquivo: file }));
-            const reader = new FileReader();
-            reader.onloadend = () => setFotoPreview(reader.result as string);
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
 
-        if (
-            !formData.nomeEvento ||
-            !formData.data ||
-            !formData.horario ||
-            !formData.local
-        ) {
-            alert("Preencha todos os campos obrigatórios antes de enviar.");
+        if (!usuario) {
+            alert("⚠️ É necessário estar logado para cadastrar um evento.");
             return;
         }
 
-        alert(`Evento "${formData.nomeEvento}" cadastrado com sucesso! (Simulado)`);
+        if (!form.imagemUrl.trim()) {
+            alert("❌ A imagem do evento é obrigatória!");
+            return;
+        }
 
-        setFormData({
-            nomeEvento: "",
-            data: "",
-            horario: "",
-            local: "",
-            descricao: "",
-            fotoLink: "",
-            fotoArquivo: null,
-        });
-        setFotoPreview(null);
-    };
+        try {
+            await cadastrarEvento({
+                nome: form.nome,
+                data: form.data,
+                horario: form.horario || undefined,
+                local: form.local,
+                descricao: form.descricao,
+                imagemUrl: form.imagemUrl,
+                criadoPor: usuario.nomeCompleto,
+            });
+
+            alert("✅ Evento cadastrado com sucesso!");
+            setForm({ nome: "", data: "", horario: "", local: "", descricao: "", imagemUrl: "" });
+        } catch (err) {
+            console.error(err);
+            alert("❌ Falha ao cadastrar evento.");
+        }
+    }
 
     return (
-        <div className="p-8 flex flex-col items-center min-h-screen">
-            <h1 className="text-3xl font-extrabold text-white mb-10">
-                🎪 Cadastrar Evento de Adoção
-            </h1>
+        <div className="max-w-3xl mx-auto p-6 bg-white/10 border border-white/10 rounded-xl shadow-lg">
+            <h1 className="text-3xl font-bold text-white mb-6">📅 Cadastrar Novo Evento</h1>
 
-            <form
-                onSubmit={handleSubmit}
-                className="bg-[#111] border border-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-3xl space-y-6"
-            >
-
+            <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                    <label className="block text-sm font-semibold text-gray-300 mb-1">
+                    <label htmlFor="nomeEvento" className="block text-sm font-semibold text-gray-300 mb-1">
                         Nome do Evento
                     </label>
                     <input
+                        id="nomeEvento"
                         type="text"
-                        name="nomeEvento"
-                        value={formData.nomeEvento}
+                        name="nome"
+                        placeholder="Nome do Evento"
+                        value={form.nome}
                         onChange={handleChange}
-                        placeholder="Ex: Feira de Adoção da Capital"
-                        className="w-full p-3 border border-gray-700 bg-[#1a1a1a] text-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
                         required
+                        className="w-full p-3 rounded-lg bg-black/30 border border-white/10 text-white"
                     />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-300 mb-1">
-                            Data
+                        <label htmlFor="dataEvento" className="block text-sm font-semibold text-gray-300 mb-1">
+                            Data do Evento *
                         </label>
                         <input
+                            id="dataEvento"
                             type="date"
                             name="data"
-                            value={formData.data}
+                            value={form.data}
                             onChange={handleChange}
-                            className="w-full p-3 border border-gray-700 bg-[#1a1a1a] text-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
                             required
+                            className="w-full p-3 rounded-lg bg-black/30 border border-white/10 text-white"
                         />
                     </div>
+
                     <div>
-                        <label className="block text-sm font-semibold text-gray-300 mb-1">
-                            Horário
+                        <label htmlFor="horarioEvento" className="block text-sm font-semibold text-gray-300 mb-1">
+                            Horário (opcional)
                         </label>
                         <input
+                            id="horarioEvento"
                             type="time"
                             name="horario"
-                            value={formData.horario}
+                            value={form.horario}
                             onChange={handleChange}
-                            className="w-full p-3 border border-gray-700 bg-[#1a1a1a] text-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
-                            required
+                            className="w-full p-3 rounded-lg bg-black/30 border border-white/10 text-white"
                         />
                     </div>
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-gray-300 mb-1">
-                        Local do Evento
+                    <label htmlFor="localEvento" className="block text-sm font-semibold text-gray-300 mb-1">
+                        Local do Evento *
                     </label>
                     <input
+                        id="localEvento"
                         type="text"
                         name="local"
-                        value={formData.local}
+                        placeholder="Local do Evento"
+                        value={form.local}
                         onChange={handleChange}
-                        placeholder="Ex: Parque da Redenção - Porto Alegre/RS"
-                        className="w-full p-3 border border-gray-700 bg-[#1a1a1a] text-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
                         required
+                        className="w-full p-3 rounded-lg bg-black/30 border border-white/10 text-white"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-gray-300 mb-1">
-                        Descrição
+                    <label htmlFor="descricaoEvento" className="block text-sm font-semibold text-gray-300 mb-1">
+                        Descrição do Evento
                     </label>
                     <textarea
+                        id="descricaoEvento"
                         name="descricao"
-                        value={formData.descricao}
+                        placeholder="Descrição do evento"
+                        value={form.descricao}
                         onChange={handleChange}
-                        placeholder="Conte detalhes sobre o evento, número de pets, instituições participantes..."
                         rows={4}
-                        className="w-full p-3 border border-gray-700 bg-[#1a1a1a] text-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none resize-none"
-                    ></textarea>
+                        className="w-full p-3 rounded-lg bg-black/30 border border-white/10 text-white"
+                    />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-gray-300 mb-1">
-                        Link da Foto (obrigatório)
+                    <label htmlFor="imagemUrl" className="block text-sm font-semibold text-gray-300 mb-1">
+                        URL da Imagem do Evento
                     </label>
                     <input
+                        id="imagemUrl"
                         type="url"
-                        name="fotoLink"
-                        value={formData.fotoLink}
+                        name="imagemUrl"
+                        placeholder="URL da imagem do evento"
+                        value={form.imagemUrl}
                         onChange={handleChange}
-                        placeholder="https://exemplo.com/imagem.jpg"
-                        className="w-full p-3 border border-gray-700 bg-[#1a1a1a] text-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
                         required
+                        className="w-full p-3 rounded-lg bg-black/30 border border-white/10 text-white"
                     />
                 </div>
-
-                <div>
-                    <label className="block text-sm font-semibold text-gray-300 mb-1">
-                        Upload de Imagem (opcional)
-                    </label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileUpload}
-                        className="w-full text-sm text-gray-400"
-                    />
-                </div>
-
-                {fotoPreview && (
-                    <div className="mt-4 flex justify-center">
-                        <img
-                            src={fotoPreview}
-                            alt="Prévia do evento"
-                            className="w-48 h-48 object-cover rounded-lg border border-gray-700 shadow-md"
-                        />
-                    </div>
-                )}
 
                 <button
                     type="submit"
-                    className="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-lg hover:opacity-90 transition duration-300"
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 font-semibold rounded-lg transition"
                 >
                     Cadastrar Evento
                 </button>
             </form>
         </div>
     );
-};
-
-export default CadastroEventoPage;
+}

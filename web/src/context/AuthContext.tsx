@@ -1,18 +1,94 @@
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { API_URL } from "../services/api";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+type Usuario = {
+  id: string;
+  nomeCompleto: string;
+  email: string;
+  senha: string;
+  role?: "user" | "admin";
+};
 
-interface AuthCtx {
-  userName: string | null;
-  login: (name: string) => void;
+type AuthContextType = {
+  usuario: Usuario | null;
+  login: (email: string, senha: string) => Promise<boolean>;
+  register: (dados: Omit<Usuario, "id">) => Promise<boolean>;
   logout: () => void;
-}
-const Ctx = createContext<AuthCtx>({ userName: null, login: () => {}, logout: () => {} });
+  loading: boolean;
+};
 
-export function AuthProvider({ children }: { children: React.ReactNode }){
-  const [userName, setUserName] = useState<string | null>(null);
-  useEffect(()=>{ setUserName(localStorage.getItem('userName')); }, []);
-  const login = (name: string) => { localStorage.setItem('userName', name); setUserName(name); };
-  const logout = () => { localStorage.removeItem('userName'); setUserName(null); };
-  return <Ctx.Provider value={{ userName, login, logout }}>{children}</Ctx.Provider>;
+const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("petAquiUser");
+    if (saved) setUsuario(JSON.parse(saved));
+    setLoading(false);
+  }, []);
+
+  async function login(email: string, senha: string): Promise<boolean> {
+    try {
+      const res = await fetch(`${API_URL}/usuarios?email=${email}`);
+      if (!res.ok) throw new Error("Erro ao buscar usuário");
+      const data: Usuario[] = await res.json();
+
+      const user = data.find((u) => u.email === email && u.senha === senha);
+      if (!user) {
+        alert("❌ E-mail ou senha incorretos!");
+        return false;
+      }
+
+      setUsuario(user);
+      localStorage.setItem("petAquiUser", JSON.stringify(user));
+      return true;
+    } catch (err) {
+      console.error("Erro no login:", err);
+      alert("⚠️ Erro ao conectar-se ao servidor.");
+      return false;
+    }
+  }
+
+  async function register(dados: Omit<Usuario, "id">): Promise<boolean> {
+    try {
+      const check = await fetch(`${API_URL}/usuarios?email=${dados.email}`);
+      const existentes = await check.json();
+      if (existentes.length > 0) {
+        alert("⚠️ Este e-mail já está cadastrado.");
+        return false;
+      }
+
+      const novo = { ...dados, id: crypto.randomUUID(), role: "user" };
+      const res = await fetch(`${API_URL}/usuarios`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(novo),
+      });
+
+      if (!res.ok) throw new Error("Erro ao cadastrar");
+      alert("✅ Usuário cadastrado com sucesso!");
+      return true;
+    } catch (err) {
+      console.error("Erro ao cadastrar usuário:", err);
+      alert("❌ Falha ao cadastrar. Verifique se o servidor (5174) está ativo.");
+      return false;
+    }
+  }
+
+  function logout() {
+    setUsuario(null);
+    localStorage.removeItem("petAquiUser");
+  }
+
+  return (
+    <AuthContext.Provider value={{ usuario, login, register, logout, loading }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
-export const useAuth = () => useContext(Ctx);
+
+export function useAuth() {
+  return useContext(AuthContext);
+}

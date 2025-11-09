@@ -1,7 +1,5 @@
-import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/layout/navbar";
-import SplashScreen from "./components/SplashScreen";
 import HomePage from "./pages/homePage";
 import AdotePage from "./pages/adotePage";
 import EventosPage from "./pages/eventosPage";
@@ -14,23 +12,22 @@ import CadastroPage from "./pages/cadastroPage";
 import PerfilPage from "./pages/perfilPage";
 import PetProfilePage from "./pages/petProfilePage";
 import CadastroEventoPage from "./pages/cadastroEventoPage";
+import DoacoesDisponiveisPage from "./pages/doacoesDisponiveisPage";
+import LaresTemporariosListPage from "./pages/laresTemporariosListPage";
 import PrivateRoute from "./context/privateRoute";
+import LoginPage from "./pages/loginPage";
 
 export default function App() {
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-[#0b0f19] to-black text-gray-100 overflow-x-hidden">
-      <SplashScreen />
-
+    <div className="min-h-screen bg-gradient-to-b from-[#0b0f19] to-black text-gray-100">
       <Navbar />
-      <main className="max-w-6xl mx-auto px-4 pt-24 pb-16 relative z-10">
+      <main className="max-w-6xl mx-auto px-4 pt-24 pb-16">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/adote" element={<AdotePage />} />
-          <Route
-            path="/cadastro-doacao-pet"
-            element={<CadastroDoacaoPetPage />}
-          />
+          <Route path="/cadastro-doacao-pet" element={<CadastroDoacaoPetPage />} />
           <Route path="/eventos" element={<EventosPage />} />
+
           <Route
             path="/cadastro-evento"
             element={
@@ -39,13 +36,18 @@ export default function App() {
               </PrivateRoute>
             }
           />
+
           <Route path="/doacao-itens" element={<DoacaoItensPage />} />
           <Route path="/lar-temporario" element={<LarTemporarioPage />} />
+          <Route path="/doacoes" element={<DoacoesDisponiveisPage />} />
+          <Route path="/lares" element={<LaresTemporariosListPage />} />
           <Route path="/denuncia" element={<DenunciaPage />} />
           <Route path="/avaliacoes" element={<AvaliacoesPage />} />
           <Route path="/perfil" element={<PerfilPage />} />
           <Route path="/cadastro-usuario" element={<CadastroPage />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/adote/:petId" element={<PetProfilePage />} />
+
           <Route
             path="*"
             element={

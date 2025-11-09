@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { registerPet } from "../services/petServices";
+import { cadastrarPet } from "../services/petServices";
 import { Pet } from "../types/pet_type";
 import Input from "../components/common/input";
 
@@ -32,7 +32,7 @@ export default function CadastroDoacaoPetPage() {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "idade" && !isNaN(parseInt(value)) ? parseInt(value) : value,
+      [name]: name === "idade" ? (value === "" ? 0 : parseInt(value) || 0) : value,
     }));
   };
 
@@ -63,7 +63,7 @@ export default function CadastroDoacaoPetPage() {
     }
 
     try {
-      await registerPet({ ...formData, fotoUrl: finalFoto || "" });
+      await cadastrarPet({ ...formData, fotoUrl: finalFoto || "" });
       alert(`${formData.nome} cadastrado com sucesso!`);
       setFormData(initialFormState);
       setFotoPreview(null);
@@ -105,11 +105,83 @@ export default function CadastroDoacaoPetPage() {
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="tipo" className="block text-sm font-semibold text-gray-300 mb-1">
+              Tipo de Animal *
+            </label>
+            <select
+              id="tipo"
+              name="tipo"
+              value={formData.tipo}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-700 bg-[#1a1a1a] text-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
+              required
+            >
+              <option value="Cachorro">Cachorro</option>
+              <option value="Gato">Gato</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="porte" className="block text-sm font-semibold text-gray-300 mb-1">
+              Porte *
+            </label>
+            <select
+              id="porte"
+              name="porte"
+              value={formData.porte}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-700 bg-[#1a1a1a] text-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
+              required
+            >
+              <option value="Pequeno">Pequeno</option>
+              <option value="Médio">Médio</option>
+              <option value="Grande">Grande</option>
+            </select>
+          </div>
+
+          <Input
+            id="idade"
+            name="idade"
+            type="number"
+            label="Idade (anos) *"
+            value={formData.idade.toString()}
+            onChange={handleChange}
+            min="0"
+            max="30"
+            required
+          />
+
+          <div>
+            <label htmlFor="cor" className="block text-sm font-semibold text-gray-300 mb-1">
+              Cor Principal *
+            </label>
+            <select
+              id="cor"
+              name="cor"
+              value={formData.cor}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-700 bg-[#1a1a1a] text-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
+              required
+            >
+              <option value="Preto">Preto</option>
+              <option value="Branco">Branco</option>
+              <option value="Marrom">Marrom</option>
+              <option value="Caramelo">Caramelo</option>
+              <option value="Cinza">Cinza</option>
+              <option value="Tigrado">Tigrado</option>
+              <option value="Outra">Outra</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input
             id="cidade"
             name="cidade"
             type="text"
-            label="Cidade"
+            label="Cidade *"
             value={formData.cidade}
             onChange={handleChange}
             required
@@ -118,7 +190,7 @@ export default function CadastroDoacaoPetPage() {
             id="estado"
             name="estado"
             type="text"
-            label="Estado"
+            label="Estado *"
             value={formData.estado}
             onChange={handleChange}
             required
@@ -126,8 +198,8 @@ export default function CadastroDoacaoPetPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-300 mb-1">
-            Descrição
+          <label htmlFor="descricao" className="block text-sm font-semibold text-gray-300 mb-1">
+            Descrição *
           </label>
           <textarea
             id="descricao"
@@ -137,6 +209,37 @@ export default function CadastroDoacaoPetPage() {
             onChange={handleChange}
             className="w-full p-3 border border-gray-700 bg-[#1a1a1a] text-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none resize-none"
             placeholder="Conte um pouco sobre o pet..."
+            required
+          ></textarea>
+        </div>
+
+        <div>
+          <label htmlFor="saude" className="block text-sm font-semibold text-gray-300 mb-1">
+            Saúde (opcional)
+          </label>
+          <textarea
+            id="saude"
+            name="saude"
+            rows={2}
+            value={formData.saude || ""}
+            onChange={handleChange}
+            className="w-full p-3 border border-gray-700 bg-[#1a1a1a] text-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none resize-none"
+            placeholder="Condições de saúde, vacinas, etc."
+          ></textarea>
+        </div>
+
+        <div>
+          <label htmlFor="temperamento" className="block text-sm font-semibold text-gray-300 mb-1">
+            Temperamento (opcional)
+          </label>
+          <textarea
+            id="temperamento"
+            name="temperamento"
+            rows={2}
+            value={formData.temperamento || ""}
+            onChange={handleChange}
+            className="w-full p-3 border border-gray-700 bg-[#1a1a1a] text-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none resize-none"
+            placeholder="Personalidade, comportamento, etc."
           ></textarea>
         </div>
 
@@ -151,14 +254,16 @@ export default function CadastroDoacaoPetPage() {
         />
 
         <div>
-          <label className="block text-sm font-semibold text-gray-300 mb-1">
+          <label htmlFor="fotoUpload" className="block text-sm font-semibold text-gray-300 mb-1">
             Upload de Imagem (opcional)
           </label>
           <input
+            id="fotoUpload"
             type="file"
             accept="image/*"
             onChange={handleFotoUpload}
-            className="w-full text-sm text-gray-400"
+            className="w-full p-3 border border-gray-700 bg-[#1a1a1a] text-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
+            title="Selecione uma imagem do pet"
           />
         </div>
 

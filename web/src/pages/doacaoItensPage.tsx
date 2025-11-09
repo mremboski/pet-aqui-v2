@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Input from "../components/common/input";
+import { cadastrarDoacao } from "../services/doacoesServices";
 
 export default function DoacaoItensPage() {
   const [formData, setFormData] = useState({
@@ -16,19 +17,43 @@ export default function DoacaoItensPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Oferta de doação registrada com sucesso! (Simulado)");
-    console.log(formData);
-    setFormData({
-      nomeDoador: "",
-      contato: "",
-      localidade: "",
-      itemTipo: "",
-      itemQuantidade: "",
-      descricaoDetalhes: "",
-      preferenciaColeta: "Coleta na Residência",
-    });
+
+    if (
+      !formData.nomeDoador ||
+      !formData.contato ||
+      !formData.itemTipo ||
+      !formData.itemQuantidade
+    ) {
+      alert("Preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    try {
+      await cadastrarDoacao({
+        doador: formData.nomeDoador,
+        contato: formData.contato,
+        localidade: formData.localidade,
+        tipo: `${formData.itemTipo} (${formData.preferenciaColeta})`,
+        quantidade: formData.itemQuantidade,
+        descricao: formData.descricaoDetalhes,
+      });
+
+      alert("✅ Oferta de doação registrada com sucesso!");
+      setFormData({
+        nomeDoador: "",
+        contato: "",
+        localidade: "",
+        itemTipo: "",
+        itemQuantidade: "",
+        descricaoDetalhes: "",
+        preferenciaColeta: "Coleta na Residência",
+      });
+    } catch (error) {
+      console.error("Erro ao registrar doação:", error);
+      alert("❌ Falha ao registrar doação. Verifique o console.");
+    }
   };
 
   return (
@@ -48,6 +73,7 @@ export default function DoacaoItensPage() {
         <h2 className="text-xl font-semibold text-white border-b border-gray-700 pb-2 mb-4">
           Seus Dados
         </h2>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input
             label="Seu Nome Completo"
@@ -88,7 +114,6 @@ export default function DoacaoItensPage() {
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
           <div>
             <label
               htmlFor="itemTipo"

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import logo from "./assets/logotransp.png";
 
 export default function SplashScreen() {
@@ -6,52 +6,84 @@ export default function SplashScreen() {
     const [showText, setShowText] = useState(false);
 
     useEffect(() => {
-        const timer1 = setTimeout(() => setShowText(true), 1000);
-        const timer2 = setTimeout(() => setFadeOut(true), 3200);
-        const timer3 = setTimeout(() => {
+        const t1 = setTimeout(() => setShowText(true), 1000);
+        const t2 = setTimeout(() => setFadeOut(true), 3200);
+        const t3 = setTimeout(() => {
             const splash = document.getElementById("splash");
-            if (splash) splash.style.display = "none";
+            if (splash) splash.classList.add("splash-hidden");
         }, 3900);
 
         return () => {
-            clearTimeout(timer1);
-            clearTimeout(timer2);
-            clearTimeout(timer3);
+            clearTimeout(t1);
+            clearTimeout(t2);
+            clearTimeout(t3);
         };
     }, []);
 
-    const paws = Array.from({ length: 15 }).map((_, i) => ({
-        id: i,
-        left: `${Math.random() * 100}%`,
-        delay: `${i * 0.6}s`,
-        color: i % 2 === 0 ? "text-purple-400/40" : "text-indigo-400/40",
-    }));
+    const paws = useMemo(() =>
+        Array.from({ length: 18 }).map((_, i) => {
+            const leftPercent = Math.random() * 100;
+            return {
+                id: i,
+                leftPercent,
+                delay: i * 0.45,
+                color: i % 2 === 0 ? "text-purple-400/40" : "text-indigo-400/40",
+            };
+        }),
+        []
+    );
+
+    useEffect(() => {
+        const styleId = "splash-paw-styles";
+        let styleElement = document.getElementById(styleId) as HTMLStyleElement;
+
+        if (!styleElement) {
+            styleElement = document.createElement("style");
+            styleElement.id = styleId;
+            document.head.appendChild(styleElement);
+        }
+
+        const cssRules = paws.map(
+            (paw) =>
+                `.paw-trail-${paw.id} { left: ${paw.leftPercent}%; animation-delay: ${paw.delay}s; }`
+        ).join("\n");
+
+        styleElement.textContent = cssRules;
+
+        return () => {
+            const element = document.getElementById(styleId);
+            if (element) {
+                element.remove();
+            }
+        };
+    }, [paws]);
 
     return (
         <div
             id="splash"
-            className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center 
+            className={`fixed inset-0 z-[9999] flex items-center justify-center
       bg-gradient-to-b from-[#0b0015] via-[#12002a] to-[#06000f]
-      transition-opacity duration-1000 ${fadeOut ? "opacity-0 pointer-events-none" : "opacity-100"
-                }`}
+      transition-opacity duration-1000 ${fadeOut ? "opacity-0 pointer-events-none" : "opacity-100"}`}
         >
+            <div className="absolute w-[600px] h-[600px] bg-purple-700/30 blur-[160px] rounded-full animate-pulse" />
+            <div className="absolute w-[300px] h-[300px] rounded-full border-2 border-purple-500/40 animate-spin-slow blur-[1px]" />
+            <div className="relative z-10 flex items-center justify-center">
+                <div className="w-52 h-52 rounded-full overflow-hidden flex items-center justify-center">
+                    <img
+                        src={logo}
+                        alt="Pet Aqui"
+                        className="w-full h-full object-contain drop-shadow-[0_0_40px_rgba(139,92,246,0.75)] animate-bounce-slow"
+                    />
+                </div>
 
-            <div className="absolute w-[500px] h-[500px] bg-purple-700/30 blur-[150px] rounded-full animate-pulse"></div>
 
-            <div className="absolute w-[220px] h-[220px] rounded-full border-2 border-purple-500/30 animate-spin-slow blur-[1px]"></div>
-
-            <div className="relative flex flex-col items-center z-10 animate-fadeIn">
-                <img
-                    src={logo}
-                    alt="Pet Aqui Logo"
-                    className="w-36 h-36 object-contain rounded-2xl drop-shadow-[0_0_30px_rgba(139,92,246,0.6)] animate-bounce-slow"
-                />
-
-                {showText && (
-                    <p className="text-gray-300 mt-8 text-lg italic tracking-wide animate-fadeInSlow">
-                        Carregando o mundo de ajuda pet...
-                    </p>
-                )}
+                <div className="absolute top-[120%] left-1/2 -translate-x-1/2 text-center">
+                    {showText && (
+                        <p className="text-gray-300 text-lg italic tracking-wide animate-fadeInSlow">
+                            Carregando o mundo de ajuda pet...
+                        </p>
+                    )}
+                </div>
             </div>
 
 
@@ -59,11 +91,8 @@ export default function SplashScreen() {
                 {paws.map((paw) => (
                     <span
                         key={paw.id}
-                        className={`${paw.color} text-2xl absolute animate-pawTrail`}
-                        style={{
-                            left: paw.left,
-                            animationDelay: paw.delay,
-                        }}
+                        className={`${paw.color} text-2xl absolute paw-trail-element paw-trail-${paw.id}`}
+                        aria-hidden="true"
                     >
                         🐾
                     </span>

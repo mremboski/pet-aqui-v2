@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Input from "../components/common/input";
+import { cadastrarLar } from "../services/laresServices";
 
 const Select: React.FC<any> = ({ label, id, children, ...props }) => (
   <div className="mb-4">
@@ -29,7 +30,6 @@ export default function LarTemporarioPage() {
     tipoPetsAceitos: "Cachorros e Gatos",
     experiencia: "",
     localidade: "",
-    disponibilidade: "2 Semanas",
   });
 
   const handleChange = (
@@ -38,20 +38,39 @@ export default function LarTemporarioPage() {
     >
   ) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Cadastro de Lar Temporário realizado! (Simulado)");
-    console.log(formData);
-    setFormData({
-      nomeVoluntario: "",
-      telefone: "",
-      email: "",
-      capacidadePets: "1",
-      tipoPetsAceitos: "Cachorros e Gatos",
-      experiencia: "",
-      localidade: "",
-      disponibilidade: "2 Semanas",
-    });
+
+    if (!formData.nomeVoluntario || !formData.telefone || !formData.localidade) {
+      alert("Preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    try {
+      await cadastrarLar({
+        nomeVoluntario: formData.nomeVoluntario,
+        telefone: formData.telefone,
+        email: formData.email,
+        localidade: formData.localidade,
+        capacidade: formData.capacidadePets,
+        aceita: formData.tipoPetsAceitos,
+        experiencia: formData.experiencia,
+      });
+
+      alert("✅ Cadastro de Lar Temporário realizado com sucesso!");
+      setFormData({
+        nomeVoluntario: "",
+        telefone: "",
+        email: "",
+        capacidadePets: "1",
+        tipoPetsAceitos: "Cachorros e Gatos",
+        experiencia: "",
+        localidade: "",
+      });
+    } catch (err) {
+      console.error("Erro ao cadastrar lar:", err);
+      alert("❌ Falha ao cadastrar lar temporário. Verifique o console.");
+    }
   };
 
   return (
@@ -65,7 +84,6 @@ export default function LarTemporarioPage() {
         className="bg-[#111] border border-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-3xl space-y-6"
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
           <Input
             label="Seu Nome Completo"
             id="nomeVoluntario"

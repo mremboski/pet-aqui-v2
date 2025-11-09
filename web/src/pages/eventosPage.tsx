@@ -1,37 +1,50 @@
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { listarEventos, type Evento } from "../context/eventServices";
 
-import React from 'react';
-interface Evento { id:number; nome:string; data:string; horario:string; local:string; descricao:string; tipo:'Feira de Adoção'|'Arrecadação'|'Mutirão'; }
-const mockEventos: Evento[] = [
-  { id:1, nome:'Feira de Adoção da Capital', data:'20/12/2025', horario:'10:00 - 16:00', local:'Parque da Redenção, Porto Alegre - RS', descricao:'Mais de 50 cães e gatos.', tipo:'Feira de Adoção' },
-  { id:2, nome:'Campanha de Ração em Canoas', data:'05/01/2026', horario:'09:00 - 12:00', local:'Supermercado Central, Canoas - RS', descricao:'Arrecadação de ração e cobertores.', tipo:'Arrecadação' },
-];
-export default function EventosPage(){
-  const getBorder = (t:string)=> t==='Feira de Adoção' ? 'border-l-secondary' : 'border-l-primary';
-  const getText = (t:string)=> t==='Feira de Adoção' ? 'text-secondary' : 'text-primary';
+export default function EventosPage() {
+  const [eventos, setEventos] = useState<Evento[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    listarEventos().then(setEventos).finally(() => setLoading(false));
+  }, []);
+
   return (
-    <div className="p-2 md:p-0">
-      <h1 className="text-3xl font-bold text_white mb-6">Próximos Eventos e Feiras de Adoção</h1>
-      <div className="space-y-6">
-        {mockEventos.map(e => (
-          <div key={e.id} className={`bg-white/10 p-6 rounded-xl shadow-lg border border_white/10 hover:shadow-xl transition duration-300 border-l-8 ${getBorder(e.tipo)}`}>
-            <div className="flex justify-between items-start mb-3">
-              <div>
-                <h2 className="text-2xl font-bold text_white">{e.nome}</h2>
-                <p className={`text-sm font-semibold mt-1 ${getText(e.tipo)}`}>{e.tipo}</p>
+    <div className="max-w-6xl mx-auto p-6">
+      <h1 className="text-3xl font-bold text-white mb-6">🎊 Eventos de Adoção e Solidariedade</h1>
+
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="h-64 bg-white/5 border border-white/10 rounded-xl animate-pulse" />
+          ))}
+        </div>
+      ) : eventos.length === 0 ? (
+        <p className="text-gray-400">Nenhum evento disponível no momento.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {eventos.map((ev) => (
+            <Link
+              key={ev.id}
+              to={`/eventos/${ev.id}`}
+              className="bg-white/10 border border-white/10 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition transform hover:scale-[1.02]"
+            >
+              <img src={ev.imagemUrl || ev.fotoUrl} alt={ev.nome} className="w-full h-48 object-cover" />
+              <div className="p-4">
+                <h3 className="text-xl text-white font-bold">{ev.nome}</h3>
+                <p className="text-gray-300 text-sm mt-1">{ev.local}</p>
+                <p className="text-gray-400 text-xs mt-1">
+                  {new Date(ev.data).toLocaleDateString("pt-BR")}
+                  {ev.horario && ` às ${ev.horario}`}
+                </p>
+                <p className="text-gray-400 text-sm mt-3 line-clamp-3">{ev.descricao}</p>
+                <p className="text-gray-500 text-xs mt-3">Criado por: {ev.criadoPor}</p>
               </div>
-              <div className="text-right">
-                <p className="text-lg font-bold text-gray-100">{e.data}</p>
-                <p className="text-sm text-gray-300">{e.horario}</p>
-              </div>
-            </div>
-            <p className="text-gray-200 mb-4">{e.descricao}</p>
-            <div className="border-t border_white/10 pt-3 flex justify-between items-center">
-              <p className="text-sm font-medium text-gray-200">Local: <span className="font-bold">{e.local}</span></p>
-              <button className="px-4 py-2 bg-primary text_white rounded-lg text-sm hover:bg-secondary transition">Ver Detalhes</button>
-            </div>
-          </div>
-        ))}
-      </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

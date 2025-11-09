@@ -1,49 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { ChevronDown, Menu, X } from "lucide-react";
-import logo from "../assets/petaqui.png";
+import { Menu, X, ChevronDown } from "lucide-react";
+import logo from "../assets/logotransp.png";
 
 export default function Navbar() {
-  const { userName, logout } = useAuth();
-  const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const baseLink =
-    "px-4 py-2 text-sm font-medium rounded-lg transition duration-200";
-  const inactive =
-    "text-gray-300 hover:text-white hover:bg-purple-800/30 cursor-pointer";
-  const active =
-    "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-[0_0_12px_rgba(139,92,246,0.5)] cursor-pointer";
 
   const toggleDropdown = (menu: string) =>
     setActiveDropdown(activeDropdown === menu ? null : menu);
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${scrolled
-        ? "backdrop-blur-xl bg-gradient-to-b from-black/80 to-black/60 shadow-[0_4px_25px_rgba(80,0,140,0.4)] border-b border-purple-700/40"
-        : "backdrop-blur-md bg-black/50 border-b border-purple-700/30"
-        }`}
+      className={`fixed top-0 left-0 w-full z-50 backdrop-blur-md bg-black/40 border-b border-purple-700/30 transition-all duration-500`}
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-8">
-        <div className="flex justify-between h-16 items-center gap-6">
-          <NavLink to="/" className="flex items-center select-none gap-3 group">
-            <div className="relative w-12 h-12 rounded-full overflow-hidden shadow-[0_0_25px_rgba(139,92,246,0.5)] ring-2 ring-purple-600/40 group-hover:ring-purple-400/70 transition duration-300">
-              <img
-                src={logo}
-                alt="Pet Aqui Logo"
-                className="w-full h-full object-cover rounded-full scale-105 group-hover:scale-110 transition-transform duration-300"
-              />
-            </div>
-            <span className="text-white font-bold text-lg tracking-wide group-hover:text-purple-300 transition">
+        <div className="flex justify-between items-center h-16">
+          <NavLink to="/" className="flex items-center space-x-2 select-none">
+            <img
+              src={logo}
+              alt="Pet Aqui"
+              className="w-10 h-10 rounded-full shadow-[0_0_15px_rgba(139,92,246,0.8)] hover:scale-105 transition-transform duration-300"
+            />
+            <span className="text-white font-bold text-lg tracking-wide">
               Pet <span className="text-purple-400">Aqui</span>
             </span>
           </NavLink>
@@ -52,13 +33,12 @@ export default function Navbar() {
             <div className="relative">
               <button
                 onClick={() => toggleDropdown("adocao")}
-                className={`${baseLink} ${activeDropdown === "adocao" ? active : inactive
-                  } flex items-center gap-1`}
+                className="text-gray-300 hover:text-white flex items-center gap-1"
               >
                 Adoção <ChevronDown className="w-4 h-4" />
               </button>
               {activeDropdown === "adocao" && (
-                <div className="absolute top-full left-0 mt-2 bg-black/80 backdrop-blur-lg border border-purple-800/40 rounded-lg shadow-lg py-2 w-56">
+                <div className="absolute top-full left-0 mt-2 bg-black/90 backdrop-blur-xl border border-purple-800/40 rounded-lg shadow-lg py-2 w-56">
                   <NavLink
                     to="/adote"
                     className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-purple-700/40"
@@ -69,7 +49,7 @@ export default function Navbar() {
                     to="/cadastro-doacao-pet"
                     className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-purple-700/40"
                   >
-                    Cadastrar Animal
+                    Cadastrar Pet
                   </NavLink>
                 </div>
               )}
@@ -78,13 +58,12 @@ export default function Navbar() {
             <div className="relative">
               <button
                 onClick={() => toggleDropdown("eventos")}
-                className={`${baseLink} ${activeDropdown === "eventos" ? active : inactive
-                  } flex items-center gap-1`}
+                className="text-gray-300 hover:text-white flex items-center gap-1"
               >
                 Eventos <ChevronDown className="w-4 h-4" />
               </button>
               {activeDropdown === "eventos" && (
-                <div className="absolute top-full left-0 mt-2 bg-black/80 backdrop-blur-lg border border-purple-800/40 rounded-lg shadow-lg py-2 w-56">
+                <div className="absolute top-full left-0 mt-2 bg-black/90 backdrop-blur-xl border border-purple-800/40 rounded-lg shadow-lg py-2 w-56">
                   <NavLink
                     to="/eventos"
                     className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-purple-700/40"
@@ -104,13 +83,12 @@ export default function Navbar() {
             <div className="relative">
               <button
                 onClick={() => toggleDropdown("doacoes")}
-                className={`${baseLink} ${activeDropdown === "doacoes" ? active : inactive
-                  } flex items-center gap-1`}
+                className="text-gray-300 hover:text-white flex items-center gap-1"
               >
                 Doações <ChevronDown className="w-4 h-4" />
               </button>
               {activeDropdown === "doacoes" && (
-                <div className="absolute top-full left-0 mt-2 bg-black/80 backdrop-blur-lg border border-purple-800/40 rounded-lg shadow-lg py-2 w-56">
+                <div className="absolute top-full left-0 mt-2 bg-black/90 backdrop-blur-xl border border-purple-800/40 rounded-lg shadow-lg py-2 w-56">
                   <NavLink
                     to="/doacao-itens"
                     className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-purple-700/40"
@@ -121,7 +99,19 @@ export default function Navbar() {
                     to="/lar-temporario"
                     className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-purple-700/40"
                   >
-                    Cadastro de Abrigo
+                    Cadastro de Lar Temporário
+                  </NavLink>
+                  <NavLink
+                    to="/doacoes"
+                    className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-purple-700/40"
+                  >
+                    Ver Doações
+                  </NavLink>
+                  <NavLink
+                    to="/lares"
+                    className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-purple-700/40"
+                  >
+                    Ver Lares
                   </NavLink>
                 </div>
               )}
@@ -130,13 +120,12 @@ export default function Navbar() {
             <div className="relative">
               <button
                 onClick={() => toggleDropdown("apoio")}
-                className={`${baseLink} ${activeDropdown === "apoio" ? active : inactive
-                  } flex items-center gap-1`}
+                className="text-gray-300 hover:text-white flex items-center gap-1"
               >
                 Apoio <ChevronDown className="w-4 h-4" />
               </button>
               {activeDropdown === "apoio" && (
-                <div className="absolute top-full left-0 mt-2 bg-black/80 backdrop-blur-lg border border-purple-800/40 rounded-lg shadow-lg py-2 w-56">
+                <div className="absolute top-full left-0 mt-2 bg-black/90 backdrop-blur-xl border border-purple-800/40 rounded-lg shadow-lg py-2 w-56">
                   <NavLink
                     to="/denuncia"
                     className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-purple-700/40"
@@ -153,90 +142,115 @@ export default function Navbar() {
               )}
             </div>
 
-            {userName && (
-              <div className="relative">
-                <button
-                  onClick={() => toggleDropdown("perfil")}
-                  className={`${baseLink} ${activeDropdown === "perfil" ? active : inactive
-                    } flex items-center gap-1`}
+            {!user ? (
+              <>
+                <NavLink
+                  to="/login"
+                  className="px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition"
                 >
-                  Perfil ({userName}) <ChevronDown className="w-4 h-4" />
-                </button>
-                {activeDropdown === "perfil" && (
-                  <div className="absolute top-full right-0 mt-2 bg-black/80 backdrop-blur-lg border border-purple-800/40 rounded-lg shadow-lg py-2 w-52">
-                    <NavLink
-                      to="/perfil"
-                      className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-purple-700/40"
-                    >
-                      Meu Perfil
-                    </NavLink>
-                    <button
-                      onClick={logout}
-                      className="block w-full text-left px-4 py-2 text-gray-300 hover:text-white hover:bg-red-600 transition"
-                    >
-                      Sair
-                    </button>
-                  </div>
+                  Entrar
+                </NavLink>
+                <NavLink
+                  to="/cadastro-usuario"
+                  className="px-4 py-2 border border-purple-500 text-purple-300 rounded-lg font-semibold hover:bg-purple-800/40 transition"
+                >
+                  Cadastrar-se
+                </NavLink>
+              </>
+            ) : (
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-300">
+                  👋 Olá, <strong>{user.nomeCompleto.split(" ")[0]}</strong>
+                </span>
+
+                {user.role === "admin" && (
+                  <NavLink
+                    to="/admin"
+                    className="px-3 py-1 bg-white/10 border border-purple-600/50 text-purple-300 rounded-lg text-sm hover:bg-white/15 transition"
+                  >
+                    Painel
+                  </NavLink>
                 )}
+
+                <button
+                  onClick={logout}
+                  className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition"
+                >
+                  Sair
+                </button>
               </div>
             )}
           </div>
 
           <div className="md:hidden">
             <button
-              onClick={() => setOpen(!open)}
-              className="text-gray-300 hover:text-white focus:outline-none"
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="text-gray-300 hover:text-white"
             >
-              {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
       </div>
 
-      {open && (
-        <div className="md:hidden bg-black/90 backdrop-blur-md border-t border-purple-900/40 px-4 py-3 space-y-2">
-          <NavLink
-            to="/adote"
-            onClick={() => setOpen(false)}
-            className="block text-gray-300 hover:text-white hover:bg-purple-700/40 px-4 py-2 rounded-lg"
-          >
-            Adotar um Pet
+      {menuOpen && (
+        <div className="md:hidden bg-black/90 border-t border-purple-800/40 px-4 py-3 space-y-3">
+          <NavLink to="/" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white">
+            Início
           </NavLink>
-          <NavLink
-            to="/eventos"
-            onClick={() => setOpen(false)}
-            className="block text-gray-300 hover:text-white hover:bg-purple-700/40 px-4 py-2 rounded-lg"
-          >
+          <NavLink to="/adote" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white">
+            Adoção
+          </NavLink>
+          <NavLink to="/eventos" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white">
             Eventos
           </NavLink>
-          <NavLink
-            to="/doacao-itens"
-            onClick={() => setOpen(false)}
-            className="block text-gray-300 hover:text-white hover:bg-purple-700/40 px-4 py-2 rounded-lg"
-          >
-            Doação de Itens
+          <NavLink to="/doacoes" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white">
+            Doações
           </NavLink>
-          <NavLink
-            to="/lar-temporario"
-            onClick={() => setOpen(false)}
-            className="block text-gray-300 hover:text-white hover:bg-purple-700/40 px-4 py-2 rounded-lg"
-          >
-            Cadastro de Abrigo
+          <NavLink to="/lares" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white">
+            Lares Temporários
+          </NavLink>
+          <NavLink to="/denuncia" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white">
+            Denúncia
           </NavLink>
 
-          {userName && (
+          {!user ? (
             <>
               <NavLink
-                to="/perfil"
-                onClick={() => setOpen(false)}
-                className="block text-gray-300 hover:text-white hover:bg-purple-700/40 px-4 py-2 rounded-lg"
+                to="/login"
+                onClick={() => setMenuOpen(false)}
+                className="block py-2 text-center bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition"
               >
-                Meu Perfil
+                Entrar
               </NavLink>
+              <NavLink
+                to="/cadastro-usuario"
+                onClick={() => setMenuOpen(false)}
+                className="block py-2 text-center border border-purple-500 text-purple-300 rounded-lg font-semibold hover:bg-purple-800/40 transition"
+              >
+                Cadastrar-se
+              </NavLink>
+            </>
+          ) : (
+            <>
+              <div className="text-gray-300 text-sm">
+                👋 Olá, {user.nomeCompleto.split(" ")[0]}
+              </div>
+
+              {user.role === "admin" && (
+                <NavLink
+                  to="/admin"
+                  onClick={() => setMenuOpen(false)}
+                  className="block text-center py-2 text-purple-300 bg-white/10 border border-purple-600/40 rounded-lg font-semibold hover:bg-white/15 transition"
+                >
+                  Painel Admin
+                </NavLink>
+              )}
+
               <button
                 onClick={() => {
                   logout();
-                  setOpen(false);
+                  setMenuOpen(false);
                 }}
                 className="w-full py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition"
               >

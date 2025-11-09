@@ -13,8 +13,55 @@
   }
 }
 
+@keyframes fadeInSlow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pawTrail {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100vh) scale(1);
+  }
+}
+
 .animate-fadeIn {
   animation: fadeIn 0.25s ease-in-out;
+}
+
+.animate-fadeInSlow {
+  animation: fadeInSlow 2s ease-in-out;
+}
+
+.animate-pawTrail {
+  animation: pawTrail 8s linear infinite;
+}
+
+.paw-trail-element {
+  animation: pawTrail 8s linear infinite;
+}
+
+.splash-hidden {
+  display: none !important;
+}
+
+.animate-spin-slow {
+  animation: spin 20s linear infinite;
+}
+
+.animate-bounce-slow {
+  animation: bounce 3s ease-in-out infinite;
 }
 
 html,
