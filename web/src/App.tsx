@@ -16,17 +16,26 @@ import DoacoesDisponiveisPage from "./pages/doacoesDisponiveisPage";
 import LaresTemporariosListPage from "./pages/laresTemporariosListPage";
 import PrivateRoute from "./context/privateRoute";
 import LoginPage from "./pages/loginPage";
+import EventoDetalhesPage from "./pages/eventoDetalhesPage";
 
 export default function App() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0b0f19] to-black text-gray-100">
       <Navbar />
+
       <main className="max-w-6xl mx-auto px-4 pt-24 pb-16">
         <Routes>
           <Route path="/" element={<HomePage />} />
+
           <Route path="/adote" element={<AdotePage />} />
+          <Route path="/adote/:petId" element={<PetProfilePage />} />
+
           <Route path="/cadastro-doacao-pet" element={<CadastroDoacaoPetPage />} />
+
           <Route path="/eventos" element={<EventosPage />} />
+
+
+          <Route path="/eventos/:eventoId" element={<EventoDetalhesPage />} />
 
           <Route
             path="/cadastro-evento"
@@ -46,7 +55,6 @@ export default function App() {
           <Route path="/perfil" element={<PerfilPage />} />
           <Route path="/cadastro-usuario" element={<CadastroPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/adote/:petId" element={<PetProfilePage />} />
 
           <Route
             path="*"

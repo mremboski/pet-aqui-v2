@@ -5,7 +5,7 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import logo from "../assets/logotransp.png";
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { usuario, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
@@ -13,9 +13,7 @@ export default function Navbar() {
     setActiveDropdown(activeDropdown === menu ? null : menu);
 
   return (
-    <nav
-      className={`fixed top-0 left-0 w-full z-50 backdrop-blur-md bg-black/40 border-b border-purple-700/30 transition-all duration-500`}
-    >
+    <nav className="fixed top-0 left-0 w-full z-50 backdrop-blur-md bg-black/40 border-b border-purple-700/30 transition-all duration-500">
       <div className="max-w-7xl mx-auto px-6 sm:px-8">
         <div className="flex justify-between items-center h-16">
           <NavLink to="/" className="flex items-center space-x-2 select-none">
@@ -28,6 +26,7 @@ export default function Navbar() {
               Pet <span className="text-purple-400">Aqui</span>
             </span>
           </NavLink>
+
 
           <div className="hidden md:flex items-center space-x-4">
             <div className="relative">
@@ -54,6 +53,7 @@ export default function Navbar() {
                 </div>
               )}
             </div>
+
 
             <div className="relative">
               <button
@@ -117,6 +117,7 @@ export default function Navbar() {
               )}
             </div>
 
+
             <div className="relative">
               <button
                 onClick={() => toggleDropdown("apoio")}
@@ -142,7 +143,7 @@ export default function Navbar() {
               )}
             </div>
 
-            {!user ? (
+            {!usuario ? (
               <>
                 <NavLink
                   to="/login"
@@ -160,10 +161,11 @@ export default function Navbar() {
             ) : (
               <div className="flex items-center gap-3">
                 <span className="text-sm text-gray-300">
-                  👋 Olá, <strong>{user.nomeCompleto.split(" ")[0]}</strong>
+                  👋 Olá,{" "}
+                  <strong>{usuario.nomeCompleto.split(" ")[0]}</strong>
                 </span>
 
-                {user.role === "admin" && (
+                {usuario.role === "admin" && (
                   <NavLink
                     to="/admin"
                     className="px-3 py-1 bg-white/10 border border-purple-600/50 text-purple-300 rounded-lg text-sm hover:bg-white/15 transition"
@@ -182,6 +184,7 @@ export default function Navbar() {
             )}
           </div>
 
+
           <div className="md:hidden">
             <button
               onClick={() => setMenuOpen(!menuOpen)}
@@ -193,28 +196,53 @@ export default function Navbar() {
         </div>
       </div>
 
+
       {menuOpen && (
         <div className="md:hidden bg-black/90 border-t border-purple-800/40 px-4 py-3 space-y-3">
-          <NavLink to="/" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white">
+          <NavLink
+            to="/"
+            onClick={() => setMenuOpen(false)}
+            className="block text-gray-300 hover:text-white"
+          >
             Início
           </NavLink>
-          <NavLink to="/adote" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white">
+          <NavLink
+            to="/adote"
+            onClick={() => setMenuOpen(false)}
+            className="block text-gray-300 hover:text-white"
+          >
             Adoção
           </NavLink>
-          <NavLink to="/eventos" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white">
+          <NavLink
+            to="/eventos"
+            onClick={() => setMenuOpen(false)}
+            className="block text-gray-300 hover:text-white"
+          >
             Eventos
           </NavLink>
-          <NavLink to="/doacoes" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white">
+          <NavLink
+            to="/doacoes"
+            onClick={() => setMenuOpen(false)}
+            className="block text-gray-300 hover:text-white"
+          >
             Doações
           </NavLink>
-          <NavLink to="/lares" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white">
+          <NavLink
+            to="/lares"
+            onClick={() => setMenuOpen(false)}
+            className="block text-gray-300 hover:text-white"
+          >
             Lares Temporários
           </NavLink>
-          <NavLink to="/denuncia" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white">
+          <NavLink
+            to="/denuncia"
+            onClick={() => setMenuOpen(false)}
+            className="block text-gray-300 hover:text-white"
+          >
             Denúncia
           </NavLink>
 
-          {!user ? (
+          {!usuario ? (
             <>
               <NavLink
                 to="/login"
@@ -234,10 +262,10 @@ export default function Navbar() {
           ) : (
             <>
               <div className="text-gray-300 text-sm">
-                👋 Olá, {user.nomeCompleto.split(" ")[0]}
+                👋 Olá, {usuario.nomeCompleto.split(" ")[0]}
               </div>
 
-              {user.role === "admin" && (
+              {usuario.role === "admin" && (
                 <NavLink
                   to="/admin"
                   onClick={() => setMenuOpen(false)}

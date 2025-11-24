@@ -41,7 +41,10 @@ export default function LoginPage() {
         )}
 
         <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-semibold text-gray-300 mb-1">
+          <label
+            htmlFor="email"
+            className="block text-sm font-semibold text-gray-300 mb-1"
+          >
             E-mail
           </label>
           <input
@@ -56,7 +59,10 @@ export default function LoginPage() {
         </div>
 
         <div className="mb-6">
-          <label htmlFor="senha" className="block text-sm font-semibold text-gray-300 mb-1">
+          <label
+            htmlFor="senha"
+            className="block text-sm font-semibold text-gray-300 mb-1"
+          >
             Senha
           </label>
           <input
@@ -79,7 +85,10 @@ export default function LoginPage() {
 
         <p className="text-sm text-gray-400 text-center mt-4">
           Ainda não tem conta?{" "}
-          <a href="/cadastro-usuario" className="text-purple-400 hover:underline">
+          <a
+            href="/cadastro-usuario"
+            className="text-purple-400 hover:underline"
+          >
             Cadastre-se
           </a>
         </p>

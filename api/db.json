@@ -53,7 +53,12 @@
       "criadoPor": "Michel Remboski",
       "createdAt": "2025-11-09T19:42:01.106Z",
       "comentarios": [],
-      "avaliacoes": [],
+      "avaliacoes": [
+        {
+          "usuarioId": "d046c765-73e3-4d23-ba63-d7028a9bdace",
+          "estrelas": 5
+        }
+      ],
       "confirmados": []
     }
   ],

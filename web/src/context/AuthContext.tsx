@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { API_URL } from "../services/api";
 
-type Usuario = {
+export type Usuario = {
   id: string;
   nomeCompleto: string;
   email: string;
@@ -11,6 +11,7 @@ type Usuario = {
 
 type AuthContextType = {
   usuario: Usuario | null;
+  isAuthenticated: boolean;
   login: (email: string, senha: string) => Promise<boolean>;
   register: (dados: Omit<Usuario, "id">) => Promise<boolean>;
   logout: () => void;
@@ -25,7 +26,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem("petAquiUser");
-    if (saved) setUsuario(JSON.parse(saved));
+    if (saved) {
+      try {
+        const parsed: Usuario = JSON.parse(saved);
+        setUsuario(parsed);
+      } catch (e) {
+        console.error("Erro ao ler usuário salvo:", e);
+        localStorage.removeItem("petAquiUser");
+      }
+    }
     setLoading(false);
   }, []);
 
@@ -33,9 +42,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const res = await fetch(`${API_URL}/usuarios?email=${email}`);
       if (!res.ok) throw new Error("Erro ao buscar usuário");
-      const data: Usuario[] = await res.json();
 
+      const data: Usuario[] = await res.json();
       const user = data.find((u) => u.email === email && u.senha === senha);
+
       if (!user) {
         alert("❌ E-mail ou senha incorretos!");
         return false;
@@ -60,7 +70,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
 
-      const novo = { ...dados, id: crypto.randomUUID(), role: "user" };
+      const novo: Usuario = {
+        ...dados,
+        id: crypto.randomUUID(),
+        role: "user",
+      };
+
       const res = await fetch(`${API_URL}/usuarios`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -68,6 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (!res.ok) throw new Error("Erro ao cadastrar");
+
       alert("✅ Usuário cadastrado com sucesso!");
       return true;
     } catch (err) {
@@ -82,8 +98,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("petAquiUser");
   }
 
+  const isAuthenticated = !!usuario;
+
   return (
-    <AuthContext.Provider value={{ usuario, login, register, logout, loading }}>
+    <AuthContext.Provider
+      value={{ usuario, isAuthenticated, login, register, logout, loading }}
+    >
       {children}
     </AuthContext.Provider>
   );
